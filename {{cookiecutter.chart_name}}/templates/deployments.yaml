@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ "{{" }} template "{{ cookiecutter.chart_name }}.fullname" . {{ "}}" }}
+  labels:
+    app: "{{ "{{" }} template "{{ cookiecutter.chart_name }}.fullname" . {{ "}}" }}"
+    chart: "{{ "{{" }} template "{{ cookiecutter.chart_name }}.chart" . {{ "}}" }}"
+    release: {{ "{{" }} .Release.Name | quote {{ "}}" }}
+    heritage: {{ "{{" }} .Release.Service | quote {{ "}}" }}
+spec:
+  selector:
+    matchLabels:
+      app: "{{ "{{" }} template "{{ cookiecutter.chart_name }}.fullname" . {{ "}}" }}"
+      release: {{ "{{" }} .Release.Name | quote {{ "}}" }}
+  replicas: {{ "{{" }} .Values.replicaCount {{ "}}" }}
+  template:
+    metadata:
+      labels:
+        app: "{{ "{{" }} template "{{ cookiecutter.chart_name }}.fullname" . {{ "}}" }}"
+        chart: "{{ "{{" }} template "{{ cookiecutter.chart_name }}.chart" . {{ "}}" }}"
+        release: {{ "{{" }} .Release.Name | quote {{ "}}" }}
+{{ "{{" }}- with .Values.podAnnotations {{ "}}" }}
+      annotations:
+{{ "{{" }} toYaml . | indent 8 {{ "}}" }}
+{{ "{{" }}- end {{ "}}" }}
+    spec:
+      {{ "{{" }}- with .Values.imagePullSecrets {{ "}}" }}
+      imagePullSecrets:
+{{ "{{" }} toYaml . | indent 8 {{ "}}" }}
+      {{ "{{" }}- end {{ "}}" }}
+      containers:
+      - name: {{ cookiecutter.chart_name }}
+        image: "{{ "{{" }} .Values.image {{ "}}" }}:{{ "{{" }} .Values.imageTag {{ "}}" }}"
+        imagePullPolicy: {{ "{{" }} .Values.imagePullPolicy | quote {{ "}}" }}
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+        readinessProbe:
+          httpGet:
+            path: /readiness
+            port: 8080
+            initialDelaySeconds: 20
+            timeoutSeconds: 5
+        resources:
+{{ "{{" }} toYaml .Values.resources | indent 10 {{ "}}" }}
+    {{ "{{" }}- with .Values.nodeSelector {{ "}}" }}
+      nodeSelector:
+{{ "{{" }} toYaml . | indent 8 {{ "}}" }}
+      {{ "{{" }}- end -{{ "}}" }}
+    {{ "{{" }}- with .Values.affinity {{ "}}" }}
+      affinity:
+{{ "{{" }} toYaml . | indent 8 {{ "}}" }}
+    {{ "{{" }}- end {{ "}}" }}
+    {{ "{{" }}- with .Values.tolerations {{ "}}" }}
+      tolerations:
+{{ "{{" }} toYaml . | indent 8 {{ "}}" }}
+    {{ "{{" }}- end {{ "}}" }}

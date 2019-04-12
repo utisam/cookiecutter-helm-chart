@@ -1,0 +1,7 @@
+{
+    "chart_name": "helm-chart",
+    "version": "0.1.0",
+    "description": "boilerplate for simple web app chart",
+    "image": "nginx",
+    "image_tag": "latest"
+}

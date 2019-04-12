@@ -1,0 +1,3 @@
+name: "{{ cookiecutter.chart_name }}"
+version: "{{ cookiecutter.version }}"
+description: "{{ cookiecutter.description }}"
